@@ -1,0 +1,14 @@
+{% extends "agecode/base.html" %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+  <h2>Hello, {{ user }}</h2>
+{% else %}
+
+  <h2>AgeCode</h2>
+  <p>The Ageless Network—Where Coding Connects Generations.</p>
+
+{% endif %}
+
+{% endblock %}
