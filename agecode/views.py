@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from .forms import RegistrationForm
 
 def home(request):
     """The home page for AgeCode."""
@@ -32,4 +33,19 @@ def user_logout(request):
 
 def register_user(request):
     """User registration form."""
-    return render(request, 'agecode/register.html')
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            # Authenticate/log user in.
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            messages.success(request, "Registration successful.")
+            return redirect('agecode:home')
+    else:
+        form = RegistrationForm()
+        return render(request, 'agecode/register.html', {'form':form})
+    
+    return render(request, 'agecode/register.html', {'form':form})
