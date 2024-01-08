@@ -29,3 +29,7 @@ def user_logout(request):
     logout(request)
     messages.success(request, "Successfully logged out.")
     return redirect('agecode:home')
+
+def register_user(request):
+    """User registration form."""
+    return render(request, 'agecode/register.html')
