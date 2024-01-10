@@ -59,9 +59,9 @@ def user_events(request):
 
     if query:
         events = Event.objects.filter(location__icontains=query)  # Filter events by location
-        header_message = f"Events in {query}"
+        header_message = (f"Events in {query.capitalize()}")
     else:
         events = Event.objects.all()  # Get all events if no query
-        header_message = "Events near you"
+        header_message = "All events"
 
     return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
