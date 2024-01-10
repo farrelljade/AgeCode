@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegistrationForm
 from .models import Event
@@ -51,3 +52,16 @@ def register_user(request):
         return render(request, 'agecode/register.html', {'form':form})
     
     return render(request, 'agecode/register.html', {'form':form})
+
+@login_required
+def user_events(request):
+    query = request.GET.get('query', '')  # Get the search query
+
+    if query:
+        events = Event.objects.filter(location__icontains=query)  # Filter events by location
+        header_message = f"Events in {query}"
+    else:
+        events = Event.objects.all()  # Get all events if no query
+        header_message = "Events near you"
+
+    return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
