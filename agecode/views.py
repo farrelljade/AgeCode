@@ -55,6 +55,7 @@ def register_user(request):
 
 @login_required
 def user_events(request):
+    """User events page."""
     query = request.GET.get('query', '')  # Get the search query
 
     if query:
@@ -65,3 +66,9 @@ def user_events(request):
         header_message = "All events"
 
     return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
+
+@login_required
+def event_details(request, pk):
+    """Events details page."""
+    event_details = Event.objects.get(id=pk)
+    return render(request, 'agecode/details.html', {'event_details':event_details})

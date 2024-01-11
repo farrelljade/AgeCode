@@ -1,0 +1,13 @@
+{% extends "agecode/base.html" %}
+
+{% block content %}
+  <div class="card" style="width: 30rem;">
+    <div class="card-body">
+    <h5 class="card-title">{{ event.location }}</h5>
+    {% if event_details %}
+      <p class="card-text">{{ event_details.description }}</p>
+    {% endif %}
+      <a href="#" class="btn btn-primary">Attend</a>
+    </div>
+  </div>
+{% endblock content %}
