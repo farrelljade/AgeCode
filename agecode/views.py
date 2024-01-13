@@ -10,6 +10,7 @@ def home(request):
     """The home page for AgeCode."""
     return render(request, 'agecode/home.html')
 
+
 def user_login(request):
     """Login page for AgeCode. Check to see if looing in."""
     if request.method == 'POST':
@@ -28,11 +29,13 @@ def user_login(request):
     else:
         return render(request, 'agecode/login.html')
     
+
 def user_logout(request):
     """Logout page."""
     logout(request)
     messages.success(request, "Successfully logged out.")
     return redirect('agecode:home')
+
 
 def register_user(request):
     """User registration form."""
@@ -49,41 +52,52 @@ def register_user(request):
             return redirect('agecode:home')
     else:
         form = RegistrationForm()
-        return render(request, 'agecode/register.html', {'form':form})
-    
+        return render(request, 'agecode/register.html', {'form':form})   
     return render(request, 'agecode/register.html', {'form':form})
 
-@login_required
+
 def add_event(request):
     """User event creation page."""
-    if request.method == 'POST':
-        form = EventForm(request.POST)
-        if form.is_valid():
-            event = form.save(commit=False)
-            event.organizer = request.user  # Set the organizer as the current user
-            event.save()
-            messages.success(request, "Event created successfully.")
-            return redirect('agecode:home')
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = EventForm(request.POST)
+            if form.is_valid():
+                event = form.save(commit=False)
+                event.organizer = request.user  # Set the organizer as the current user
+                event.save()
+                messages.success(request, "Event created successfully.")
+                return redirect('agecode:home')
+        else:
+            form = EventForm()
+        return render(request, 'agecode/add_event.html', {'form':form})
     else:
-        form = EventForm()
-    return render(request, 'agecode/add_event.html', {'form':form})
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect('agecode:home')
 
-@login_required
+
 def user_events(request):
     """User events page."""
-    query = request.GET.get('query', '')  # Get the search query
+    if request.user.is_authenticated:
+        query = request.GET.get('query', '')  # Get the search query
 
-    if query:
-        events = Event.objects.filter(location__icontains=query)  # Filter events by location
-        header_message = (f"Events in {query.capitalize()}")
+        if query:
+            events = Event.objects.filter(location__icontains=query)  # Filter events by location
+            header_message = (f"Events in {query.capitalize()}")
+        else:
+            events = Event.objects.all()  # Get all events if no query
+            header_message = "All events"
+
+        return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
     else:
-        events = Event.objects.all()  # Get all events if no query
-        header_message = "All events"
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect('agecode:home')
 
-    return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
 
-@login_required
 def event_details(request, pk):
     """Events details page."""
-    event_details = Event.objects.get(id=pk)
-    return render(request, 'agecode/details.html', {'event_details':event_details})
+    if request.user.is_authenticated:
+        event_details = Event.objects.get(id=pk)
+        return render(request, 'agecode/details.html', {'event_details':event_details})
+    else:
+        messages.error(request, "You must be logged in to view this page!")
+        return redirect('agecode:home')
