@@ -53,6 +53,7 @@ def register_user(request):
     
     return render(request, 'agecode/register.html', {'form':form})
 
+@login_required
 def add_event(request):
     """User event creation page."""
     if request.method == 'POST':
