@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import RegistrationForm
+from .forms import RegistrationForm, EventForm
 from .models import Event
 
 
@@ -52,6 +52,20 @@ def register_user(request):
         return render(request, 'agecode/register.html', {'form':form})
     
     return render(request, 'agecode/register.html', {'form':form})
+
+def add_event(request):
+    """User event creation page."""
+    if request.method == 'POST':
+        form = EventForm(request.POST)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.organizer = request.user  # Set the organizer as the current user
+            event.save()
+            messages.success(request, "Event created successfully.")
+            return redirect('agecode:home')
+    else:
+        form = EventForm()
+    return render(request, 'agecode/add_event.html', {'form':form})
 
 @login_required
 def user_events(request):

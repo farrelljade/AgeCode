@@ -38,7 +38,20 @@ class RegistrationForm(UserCreationForm):
         self.fields['password1'].help_text = '<ul class="form-text text-muted small"><li>Your password can\'t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can\'t be a commonly used password.</li><li>Your password can\'t be entirely numeric.</li></ul>'
         self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
 
-class EventForm(ModelForm):
+class EventForm(forms.ModelForm):
+    """Create an event registration form. User has to be logged in."""
     class Meta:
         model = Event
         fields = ['title', 'description', 'date', 'location']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Title'}),
+            'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
+            'date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+            'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Location'}),
+        }
+        labels = {
+            'title': '',
+            'description': '',
+            'date': '',
+            'location': '',
+        }

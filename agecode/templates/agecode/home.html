@@ -1,6 +1,6 @@
 {% extends "agecode/base.html" %}
 
-{% block content %}
+{% block header %}
 
 {% if user.is_authenticated %}
   <h2>Welcome, {{ user }}👋</h2></br>
@@ -12,4 +12,4 @@
 
 {% endif %}
 
-{% endblock %}
+{% endblock header %}
