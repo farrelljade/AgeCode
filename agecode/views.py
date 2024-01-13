@@ -23,8 +23,8 @@ def user_login(request):
             return redirect('agecode:home')
         else:
             # Return an invalid login error message.
-            messages.error(request, 'Invalid credentials. Please try again.')
-            return redirect('agecode:login')
+            messages.error(request, 'Invalid credentials.')
+            return redirect('agecode:home')
     else:
         return render(request, 'agecode/login.html')
     

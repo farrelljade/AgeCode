@@ -1,6 +1,6 @@
 {% load static %}  
  
-<nav class="navbar navbar-expand-lg border-bottom border-body" style="background-color: #e3f2fd;>
+<nav class="navbar navbar-expand-lg border-bottom border-body" style="background-color: #e3f2fd;">
   <div class="container-fluid">
     <a class="navbar-brand" href="{% url 'agecode:home' %}">
       <img src="{% static 'agecode/images/agecode_logo.png' %}" alt="" width="40" height="40">
@@ -18,23 +18,51 @@
       {% if user.is_authenticated %}
       <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active btn btn-link" aria-current="page" href="{% url 'agecode:logout' %}">Logout</a>
+            <a class="nav-link btn btn-link" aria-current="page" href="{% url 'agecode:logout' %}">Logout</a>
           </li>                   
         </ul>
       {% else %}
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link active btn btn-link" aria-current="page" href="{% url 'agecode:login' %}">Login</a>
-        </li>                   
+          <button type="button" class="nav-link btn btn-link" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Login
+          </button>
+          <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header text-center">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">Login</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  <div class="col-md-6 offset-md-3">
+                    <form method="POST" action="{% url 'agecode:login' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                          <input type="text" class="form-control" name="username" placeholder="Username" required>
+                        </div>
+                        <br/>
+                        <div class="mb-3">
+                          <input type="password" class="form-control" name="password" placeholder="Password" required>
+                        </div>
+                        <br/>
+                        <div class="modal-footer justify-content-center">
+                          <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>               
       </ul>
-
       <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link active btn btn-link" aria-current="page" href="{% url 'agecode:register' %}">Register</a>
+            <a class="nav-link btn btn-link" aria-current="page" href="{% url 'agecode:register' %}">Register</a>
           </li>                   
         </ul>
       {% endif %}
-      
     </div>
   </div>
 </nav>
