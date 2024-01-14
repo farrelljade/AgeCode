@@ -3,7 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import RegistrationForm, EventForm
-from .models import Event
+from .models import Event, EventAttendance
 
 
 def home(request):
@@ -71,7 +71,7 @@ def add_event(request):
             form = EventForm()
         return render(request, 'agecode/add_event.html', {'form':form})
     else:
-        messages.error(request, "You must be logged in to view this page!")
+        messages.error(request, "You must be logged in to create an event!")
         return redirect('agecode:home')
 
 
@@ -82,14 +82,14 @@ def user_events(request):
 
         if query:
             events = Event.objects.filter(location__icontains=query)  # Filter events by location
-            header_message = (f"Events in {query.capitalize()}")
+            header_message = (f"Upcoming events in {query.capitalize()}")
         else:
             events = Event.objects.all()  # Get all events if no query
-            header_message = "All events"
+            header_message = "Upcoming events"
 
-        return render(request, 'agecode/events.html', {'events': events, 'header_message': header_message})
+        return render(request, 'agecode/events.html', {'events':events, 'header_message':header_message})
     else:
-        messages.error(request, "You must be logged in to view this page!")
+        messages.error(request, "You must be logged in to view upcoming events!")
         return redirect('agecode:home')
 
 
@@ -98,6 +98,29 @@ def event_details(request, pk):
     if request.user.is_authenticated:
         event_details = Event.objects.get(id=pk)
         return render(request, 'agecode/details.html', {'event_details':event_details})
+    else:
+        messages.error(request, "You must be logged in to view event details page!")
+        return redirect('agecode:home')
+    
+def attend_event(request, event_id):
+    """User event attendance record."""
+    if request.user.is_authenticated:
+        event = Event.objects.get(id=event_id)
+        EventAttendance.objects.get_or_create(user=request.user, event=event)  # get_or_create ensures users cant register for the same event more than once.
+        messages.success(request, "Congratulations. You are attending the event...")
+        return redirect('agecode:view_profile')
+    else:
+        messages.error(request, "You must be a registered user to attend events...")
+        return redirect('agecode:home')
+    
+def view_profile(request):
+    """User profile page."""
+    if request.user.is_authenticated:
+        # Fetch events user is attending
+        attending_events = EventAttendance.objects.filter(user=request.user).select_related('event')
+
+        # Pass the events to the template
+        return render(request, 'agecode/view_profile.html', {'attending_events':attending_events})
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect('agecode:home')

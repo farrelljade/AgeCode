@@ -19,8 +19,8 @@
           <figcaption class="blockquote-footer">
             Organiser by <cite title="Source Title">{{ event.organizer }}</cite>
           </figcaption>
+          <a href="{% url 'agecode:attend_event' event.id %}" class="btn btn-primary">Attend</a>
           <a href="{% url 'agecode:details' event.id %}" class="btn btn-primary">Details</a>
-          <a href="#" class="btn btn-primary">Attend</a>
         </div>
     </div>
     </br>

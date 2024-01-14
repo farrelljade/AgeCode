@@ -1,0 +1,14 @@
+{% extends "agecode/base.html" %}
+
+
+{% block header %}
+  <h2>Profile Page</h2>
+  <br/>
+  {% if attending_events %}
+    {% for attendance in attending_events %}
+      <h2>You are attending: {{ attendance.event.title }}</h2>
+    {% endfor %}
+  {% else %}
+    <p>You are not attending any events yet.</p>
+  {% endif %}
+{% endblock header %}

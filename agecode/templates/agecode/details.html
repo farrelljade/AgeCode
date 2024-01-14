@@ -9,7 +9,7 @@
       <div class="card-body">
         <p class="card-text">{{ event_details.description }}</p>
         <br/>
-        <a href="#" class="btn btn-primary">Attend</a>
+        <a href="{% url 'agecode:attend_event' event_details.id %}" class="btn btn-primary">Attend</a>
         <a href="{% url 'agecode:events' %}" class="btn btn-primary">Back</a>
       </div>
   </div>
