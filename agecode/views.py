@@ -106,21 +106,42 @@ def attend_event(request, event_id):
     """User event attendance record."""
     if request.user.is_authenticated:
         event = Event.objects.get(id=event_id)
-        EventAttendance.objects.get_or_create(user=request.user, event=event)  # get_or_create ensures users cant register for the same event more than once.
+        # get_or_create ensures users cant register for the same event more than once.
+        EventAttendance.objects.get_or_create(user=request.user, event=event)
         messages.success(request, "Congratulations. You are attending the event...")
         return redirect('agecode:view_profile')
     else:
         messages.error(request, "You must be a registered user to attend events...")
         return redirect('agecode:home')
     
+def cancel_event(request, event_id):
+    """Cancelling an event."""
+    if request.user.is_authenticated:
+        event = Event.objects.get(id=event_id)
+        attendance_record = EventAttendance.objects.filter(user=request.user, event=event)
+        if attendance_record.exists():
+            attendance_record.delete()
+            messages.success(request, "You have cancelled your attendance.")
+            return redirect('agecode:view_profile')
+        else:
+            messages.error(request, "You are not registered for this event.")
+        return redirect('agecode:details', pk=event_id)
+    else:
+        messages.error(request, "You must be logged in to cancel an event.")
+        return redirect('agecode:home')
+    
 def view_profile(request):
     """User profile page."""
     if request.user.is_authenticated:
-        # Fetch events user is attending
+        # Fetch the amount of events the user is attending
+        event_count = EventAttendance.objects.filter(user=request.user).count()
+        # Fetch the events user is attending
         attending_events = EventAttendance.objects.filter(user=request.user).select_related('event')
-
-        # Pass the events to the template
-        return render(request, 'agecode/view_profile.html', {'attending_events':attending_events})
+        context = {
+            'attending_events': attending_events,
+            'event_count': event_count
+        }
+        return render(request, 'agecode/view_profile.html', context)
     else:
         messages.error(request, "You must be logged in to view this page!")
         return redirect('agecode:home')

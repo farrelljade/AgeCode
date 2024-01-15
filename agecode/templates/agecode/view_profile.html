@@ -2,13 +2,27 @@
 
 
 {% block header %}
-  <h2>Profile Page</h2>
-  <br/>
+  <h2>You have {{ event_count }} upcoming events.</h2>
+  </br>
+{% endblock header %}
+
+{% block content %}
   {% if attending_events %}
     {% for attendance in attending_events %}
-      <h2>You are attending: {{ attendance.event.title }}</h2>
+    <div class="card text-bg-light w-50">
+      <div class="card-header">
+        <h5>{{ attendance.event.location }}</h5>
+      </div>
+        <div class="card-body">
+          <h5 class="card-title">{{ attendance.event.date }}</h5></br>
+          <p class="card-text">{{ attendance.event.description }}</p>
+          </br>
+          <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-primary">Cancel Event</a>
+        </div>
+      </div>
+      </br>
     {% endfor %}
   {% else %}
     <p>You are not attending any events yet.</p>
   {% endif %}
-{% endblock header %}
+{% endblock content %}
