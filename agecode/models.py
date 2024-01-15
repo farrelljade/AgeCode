@@ -7,6 +7,7 @@ class Event(models.Model):
     description = models.TextField()
     date = models.DateTimeField()
     location = models.CharField(max_length=200)
+    image = models.ImageField(upload_to='event_images/', default='default.jpg')
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):

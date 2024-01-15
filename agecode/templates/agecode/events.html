@@ -1,4 +1,5 @@
 {% extends "agecode/base.html" %}
+{% load static %}
 
 {% block header %}
 <div class="mb-4">
@@ -9,19 +10,18 @@
 {% block content %}
   {% if events %}
     {% for event in events %}
-    <div class="card text-bg-light w-75">
-      <div class="card-header">
-        {{ event.date }}
-      </div>
-        <div class="card-body">
-          <h5 class="card-title">{{ event.location }}</h5>
-          <p class="card-text">{{ event.title }}</p>
+    <div class="card" style="width: 18rem;">
+      <img src="{{ event.image.url }}" class="card-img-top" alt="...">
+      <div class="card-body">
+        <h5>{{ event.location }}</h5>
+          <p class="card-title">{{ event.title }}</p>
+          <p class="card-text">{{ event.date }}</p>
           <figcaption class="blockquote-footer">
             Organiser by <cite title="Source Title">{{ event.organizer }}</cite>
           </figcaption>
           <a href="{% url 'agecode:attend_event' event.id %}" class="btn btn-primary">Attend</a>
           <a href="{% url 'agecode:details' event.id %}" class="btn btn-primary">Details</a>
-        </div>
+      </div>
     </div>
     </br>
     {% endfor %}

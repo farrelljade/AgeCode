@@ -8,7 +8,8 @@ from .models import Event, EventAttendance
 
 def home(request):
     """The home page for AgeCode."""
-    return render(request, 'agecode/home.html')
+    events = Event.objects.all()
+    return render(request, 'agecode/home.html', {'events':events})
 
 
 def user_login(request):
