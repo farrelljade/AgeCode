@@ -87,8 +87,14 @@ def user_events(request):
         else:
             events = Event.objects.all()  # Get all events if no query
             header_message = "Upcoming events"
-
-        return render(request, 'agecode/events.html', {'events':events, 'header_message':header_message})
+        # Get IDs of events the user is attending
+        attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
+        context = {
+            'events': events,
+            'header_message': header_message,
+            'attending_event_ids': attending_event_ids,
+        }
+        return render(request, 'agecode/events.html', context)
     else:
         messages.error(request, "You must be logged in to view upcoming events!")
         return redirect('agecode:home')
@@ -103,6 +109,7 @@ def event_details(request, pk):
         messages.error(request, "You must be logged in to view event details page!")
         return redirect('agecode:home')
     
+
 def attend_event(request, event_id):
     """User event attendance record."""
     if request.user.is_authenticated:
@@ -110,11 +117,12 @@ def attend_event(request, event_id):
         # get_or_create ensures users cant register for the same event more than once.
         EventAttendance.objects.get_or_create(user=request.user, event=event)
         messages.success(request, "Congratulations. You are attending the event...")
-        return redirect('agecode:view_profile')
+        return redirect('agecode:events')
     else:
         messages.error(request, "You must be a registered user to attend events...")
         return redirect('agecode:home')
     
+
 def cancel_event(request, event_id):
     """Cancelling an event."""
     if request.user.is_authenticated:
@@ -130,6 +138,7 @@ def cancel_event(request, event_id):
     else:
         messages.error(request, "You must be logged in to cancel an event.")
         return redirect('agecode:home')
+    
     
 def view_profile(request):
     """User profile page."""

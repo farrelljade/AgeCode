@@ -17,7 +17,7 @@
           <h5 class="card-title">{{ attendance.event.date }}</h5></br>
           <p class="card-text">{{ attendance.event.description }}</p>
           </br>
-          <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-primary">Cancel Event</a>
+          <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-danger">Cancel Event</a>
         </div>
       </div>
       </br>

@@ -19,7 +19,11 @@
           <figcaption class="blockquote-footer">
             Organiser by <cite title="Source Title">{{ event.organizer }}</cite>
           </figcaption>
-          <a href="{% url 'agecode:attend_event' event.id %}" class="btn btn-primary">Attend</a>
+          {% if event.id in attending_event_ids %}
+            <a href="{% url 'agecode:cancel_event' event.id %}" class="btn btn-danger">Cancel Event</a>
+          {% else %}
+            <a href="{% url 'agecode:attend_event' event.id %}" class="btn btn-primary">Attend</a>
+          {% endif %}
           <a href="{% url 'agecode:details' event.id %}" class="btn btn-primary">Details</a>
       </div>
     </div>
