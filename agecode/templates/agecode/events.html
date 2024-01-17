@@ -12,10 +12,11 @@
     {% for event in events %}
     <div class="card" style="width: 18rem;">
       <img src="{{ event.image.url }}" class="card-img-top" alt="...">
-      <div class="card-body">
+      <div class="card-body text-bg-light">
         <h5>{{ event.location }}</h5>
-          <p class="card-title">{{ event.title }}</p>
           <p class="card-text">{{ event.date }}</p>
+          <p class="card-text">Places remaining: {{ event.spots_remaining }}</p>
+          <br/>
           <figcaption class="blockquote-footer">
             Organiser by <cite title="Source Title">{{ event.organizer }}</cite>
           </figcaption>

@@ -2,7 +2,7 @@
 
 {% block header %}
   <div class="col-md-6 offset-md-3">
-    <form method="POST" action="">
+    <form method="POST" action="" enctype="multipart/form-data">
       {% csrf_token %}
         <div class="mb-3">
           {% if form.errors %}          

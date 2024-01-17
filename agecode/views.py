@@ -61,7 +61,7 @@ def add_event(request):
     """User event creation page."""
     if request.user.is_authenticated:
         if request.method == 'POST':
-            form = EventForm(request.POST)
+            form = EventForm(request.POST, request.FILES)
             if form.is_valid():
                 event = form.save(commit=False)
                 event.organizer = request.user  # Set the organizer as the current user
@@ -114,9 +114,18 @@ def attend_event(request, event_id):
     """User event attendance record."""
     if request.user.is_authenticated:
         event = Event.objects.get(id=event_id)
-        # get_or_create ensures users cant register for the same event more than once.
-        EventAttendance.objects.get_or_create(user=request.user, event=event)
-        messages.success(request, "Congratulations. You are attending the event...")
+        if event.spots_remaining > 0:
+            # Check if the user has already registered.
+            attendance, created = EventAttendance.objects.get_or_create(user=request.user, event=event)
+            if created:
+                event.spots_remaining -= 1
+                event.save()
+                messages.success(request, "Congratulations. You are attending the event...")
+            else:
+                messages.info(request, "You have already registered for this event.")
+        else:
+            messages.error(request, "Sorry, this event has reached its capacity.")
+        
         return redirect('agecode:events')
     else:
         messages.error(request, "You must be a registered user to attend events...")
@@ -131,7 +140,7 @@ def cancel_event(request, event_id):
         if attendance_record.exists():
             attendance_record.delete()
             messages.success(request, "You have cancelled your attendance.")
-            return redirect('agecode:view_profile')
+            return redirect('agecode:events')
         else:
             messages.error(request, "You are not registered for this event.")
         return redirect('agecode:details', pk=event_id)
@@ -139,7 +148,7 @@ def cancel_event(request, event_id):
         messages.error(request, "You must be logged in to cancel an event.")
         return redirect('agecode:home')
     
-    
+
 def view_profile(request):
     """User profile page."""
     if request.user.is_authenticated:

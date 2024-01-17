@@ -7,8 +7,15 @@ class Event(models.Model):
     description = models.TextField()
     date = models.DateTimeField()
     location = models.CharField(max_length=200)
+    event_capacity = models.IntegerField(default=0, verbose_name='Capacity')
+    spots_remaining = models.IntegerField(default=0, verbose_name='Spots Remaining')
     image = models.ImageField(upload_to='event_images/', default='default.jpg')
     organizer = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:  # Check if this is a new event.
+            self.spots_remaining = self.event_capacity
+        super().save(*args, **kwargs)
 
     def __str__(self):
         """Return a string representation of the model."""

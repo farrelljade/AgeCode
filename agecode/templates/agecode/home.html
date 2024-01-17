@@ -6,32 +6,9 @@
 {% if user.is_authenticated %}
   <h2>Welcome, {{ user }}👋</h2></br>
   <h5>Upcoming events</h5>
-  
-  {% if events %}
-  <div id="carouselExample" class="carousel slide">
-    <div class="carousel-inner">
-      {% for event in events %}
-      <div class="carousel-item active {% if forloop.first %}active{% endif %}">
-        <img src="{{ event.image.url }}" class="d-block w-50" alt="">
-      </div>
-      {% endfor %}
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
-  {% endif %}
-
 {% else %}
-
   <h2>AgeCode</h2>
   <p>The Ageless Network—Where Coding Connects Generations.</p>
-
 {% endif %}
 
 {% endblock header %}
