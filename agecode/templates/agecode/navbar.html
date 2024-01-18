@@ -18,6 +18,11 @@
       {% if user.is_authenticated %}
         <ul class="navbar-nav">
           <li class="nav-item">
+            <a class="nav-link btn btn-link" href="#">{{ user }},</a>
+          </li>                   
+        </ul>
+        <ul class="navbar-nav">
+          <li class="nav-item">
             <a class="nav-link btn btn-link" aria-current="page" href="{% url 'agecode:add_event' %}">Create Event</a>
           </li>                   
         </ul>

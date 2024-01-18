@@ -1,16 +1,22 @@
 {% extends "agecode/base.html" %}
 
-{% block content %}  
-  <div class="card text-bg-light w-50">
-    <div class="card-header">
-      <h5 class="card-title text-center">{{ event_details.title }}</h5>
-    </div>
-    <br/>
-      <div class="card-body">
-        <p class="card-text">{{ event_details.description }}</p>
-        <br/>
-        <a href="{% url 'agecode:attend_event' event_details.id %}" class="btn btn-primary">Attend</a>
-        <a href="{% url 'agecode:events' %}" class="btn btn-primary">Back</a>
+{% block content %} 
+  {% if event %} 
+    <div class="card text-bg-light w-50">
+      <div class="card-header">
+        <h5 class="card-title text-center">{{ event.title }}</h5>
       </div>
-  </div>
+      <br/>
+        <div class="card-body">
+          <p class="card-text">{{ event.description }}</p>
+          <br/>
+          {% if event.id in attending_event_ids %}
+            <a href="{% url 'agecode:cancel_event' event.id %}" class="btn btn-danger">Cancel Event</a>
+          {% else %}  
+            <a href="{% url 'agecode:attend_event' event.id %}" class="btn btn-primary">Attend</a>
+          {% endif %}
+            <a href="{% url 'agecode:events' %}" class="btn btn-primary">Back</a>
+        </div>
+    </div>  
+  {% endif %}
 {% endblock content %}

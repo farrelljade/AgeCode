@@ -9,7 +9,13 @@ from .models import Event, EventAttendance
 def home(request):
     """The home page for AgeCode."""
     events = Event.objects.all()
-    return render(request, 'agecode/home.html', {'events':events})
+    if request.user.is_authenticated:
+        user_name = request.user.first_name
+        if user_name:
+            user_name = user_name[0].upper() + user_name[1:]
+    else:
+        user_name = ''
+    return render(request, 'agecode/home.html', {'events':events, 'user_name':user_name})
 
 
 def user_login(request):
@@ -89,6 +95,7 @@ def user_events(request):
             header_message = "Upcoming events"
         # Get IDs of events the user is attending
         attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
+
         context = {
             'events': events,
             'header_message': header_message,
@@ -103,8 +110,17 @@ def user_events(request):
 def event_details(request, pk):
     """Events details page."""
     if request.user.is_authenticated:
-        event_details = Event.objects.get(id=pk)
-        return render(request, 'agecode/details.html', {'event_details':event_details})
+        # Fetch the specific event using the primary key 'pk'
+        event = Event.objects.get(id=pk)
+
+        # Get IDs of events the user is attending
+        attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
+
+        context = {
+            'event': event,
+            'attending_event_ids': attending_event_ids,
+        }
+        return render(request, 'agecode/details.html', context)
     else:
         messages.error(request, "You must be logged in to view event details page!")
         return redirect('agecode:home')
@@ -139,6 +155,8 @@ def cancel_event(request, event_id):
         attendance_record = EventAttendance.objects.filter(user=request.user, event=event)
         if attendance_record.exists():
             attendance_record.delete()
+            event.spots_remaining += 1
+            event.save()
             messages.success(request, "You have cancelled your attendance.")
             return redirect('agecode:events')
         else:
