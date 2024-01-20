@@ -1,29 +1,42 @@
 {% extends "agecode/base.html" %}
 
 
-{% block header %}
-  <h2>Upcoming events</h2>
-  </br>
-{% endblock header %}
-
 {% block content %}
-  {% if attending_events %}
-    {% for attendance in attending_events %}
+
+  <h3>Manage Events:</h3>
+  {% if created_events %}
+    {% for event in created_events %}
     <div class="card" style="width: 18rem;">
+      <!-- Event information like title, date, etc. -->
       <div class="card-header">
-        <h5>{{ attendance.event.location }}</h5>
+        <h5>{{ event.title }}</h5>
       </div>
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">{{ attendance.event.date }}</li>
-      </ul>
-        <div class="card-body">
-          <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-danger">Cancel Event</a>
-          <a href="{% url 'agecode:details' attendance.event.id %}" class="btn btn-primary">Details</a>
-        </div>
+      <div class="card-body">
+        <a href="{% url 'agecode:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
+        <!-- Other buttons like details or delete -->
+      </div>
     </div>
-      </br>
     {% endfor %}
   {% else %}
-    <p>You are not attending any events yet.</p>
-  {% endif %}
+    <p>You haven't created any events yet.</p>
+  {% endif %}</br>
+
+    <h3>You have {{ event_count }} upcoming events</h3>
+    {% if attending_events %}
+      {% for attendance in attending_events %}
+      <div class="card" style="width: 18rem;">
+        <div class="card-header">
+          <h5>{{ attendance.event.location }}</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">{{ attendance.event.date }}</li>
+        </ul>
+          <div class="card-body">
+            <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-danger">Cancel Event</a>
+            <a href="{% url 'agecode:details' attendance.event.id %}" class="btn btn-primary">Details</a>
+          </div>
+      </div></br>
+      {% endfor %}
+    {% endif %}
+
 {% endblock content %}

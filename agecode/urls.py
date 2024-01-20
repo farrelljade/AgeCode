@@ -9,9 +9,11 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('register/', views.register_user, name='register'),
     path('events/', views.user_events, name='events'),
-    path('events/<int:pk>', views.event_details, name='details'),
+    path('events/<int:event_id>', views.event_details, name='details'),
     path('add_event', views.add_event, name='add_event'),
     path('events/attend/<int:event_id>/', views.attend_event, name='attend_event'),
     path('events/cancel/<int:event_id>/', views.cancel_event, name='cancel_event'),
+    path('events/edit/<int:event_id>/', views.edit_event, name='edit_event'),
+    path('events/delete/<int:event_id>/', views.delete_event, name='delete_event'),
     path('view_profile', views.view_profile, name='view_profile'),
 ]

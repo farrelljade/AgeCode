@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -19,7 +19,7 @@ def home(request):
 
 
 def user_login(request):
-    """Login page for AgeCode. Check to see if looing in."""
+    """Login page for AgeCode. Check to see if logged in."""
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
@@ -32,7 +32,7 @@ def user_login(request):
         else:
             # Return an invalid login error message.
             messages.error(request, 'Invalid credentials.')
-            return redirect('agecode:home')
+            return redirect('agecode:login')
     else:
         return render(request, 'agecode/login.html')
     
@@ -107,11 +107,11 @@ def user_events(request):
         return redirect('agecode:home')
 
 
-def event_details(request, pk):
+def event_details(request, event_id):
     """Events details page."""
     if request.user.is_authenticated:
-        # Fetch the specific event using the primary key 'pk'
-        event = Event.objects.get(id=pk)
+        # Show the specific event using the primary key
+        event = get_object_or_404(Event, id=event_id)
 
         # Get IDs of events the user is attending
         attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
@@ -167,16 +167,45 @@ def cancel_event(request, event_id):
         return redirect('agecode:home')
     
 
+def edit_event(request, event_id):
+    """User created events edit page."""
+    if request.user.is_authenticated:
+        # Show events created by specific user
+        user_event = get_object_or_404(Event, id=event_id, organizer=request.user)
+
+    if request.method == 'POST':
+        # Create a form instance and populate it with data from the request.
+        form = EventForm(request.POST, request.FILES, instance=user_event)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your event has been updated...")
+            return redirect('agecode:view_profile')
+    else:
+        # This else corresponds to if the request is not POST, meaning it is a GET request
+        form = EventForm(instance=user_event)
+
+    # Return outside of the conditional statement ensures that 'form' is always defined
+    return render(request, 'agecode/edit_event.html', {'form': form})
+
+
+def delete_event(request, event_id):
+    pass
+
+
 def view_profile(request):
     """User profile page."""
     if request.user.is_authenticated:
-        # Fetch the amount of events the user is attending
+        # Show the amount of events the user is attending
         event_count = EventAttendance.objects.filter(user=request.user).count()
-        # Fetch the events user is attending
+        # Show the events user is attending
         attending_events = EventAttendance.objects.filter(user=request.user).select_related('event')
+        # Show events created by user
+        created_events = Event.objects.filter(organizer=request.user)
+
         context = {
             'attending_events': attending_events,
-            'event_count': event_count
+            'event_count': event_count,
+            'created_events': created_events,
         }
         return render(request, 'agecode/view_profile.html', context)
     else:

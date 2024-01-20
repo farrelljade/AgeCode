@@ -35,12 +35,13 @@ class EventForm(forms.ModelForm):
     """Create an event registration form. User has to be logged in."""
     class Meta:
         model = Event
-        fields = ['title', 'description', 'date', 'event_capacity', 'location', 'image',]
+        fields = ['title', 'description', 'date', 'event_capacity', 'spots_remaining', 'location', 'image',]
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Title'}),
             'description': forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}),
             'date': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
             'event_capacity': forms.NumberInput(attrs={'class': 'form-control'}),
+            'spots_remaining': forms.NumberInput(attrs={'class': 'form-control'}),
             'location': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Event Location'}),
             'image': forms.FileInput(attrs={'class': 'form-control'}),
         }
