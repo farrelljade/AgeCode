@@ -30,7 +30,7 @@
     
     <!-- Manage Events Column -->
     <div class="col-md-6">
-      <h3>Manage Events:</h3>
+      <h3>Manage events:</h3>
       {% if created_events %}
         {% for event in created_events %}
         <div class="card" style="width: 75%;">
@@ -38,12 +38,15 @@
             <h5>{{ event.title }}</h5>
           </div>
           <div class="card-body">
+            <h5>Total attendees: {{ event.total_attendees }}</h5>
+          </div>
+          <div class="card-body">
             <a href="{% url 'agecode:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
             <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-delete-url="{% url 'agecode:delete_event' event.id %}">
               Delete Event
             </button>            
           </div>
-        </div>
+        </div></br>
         {% endfor %}
       {% else %}
         <p>You haven't created any events yet.</p>

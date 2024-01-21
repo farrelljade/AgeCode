@@ -7,9 +7,11 @@ from .models import Event
 
 class RegistrationForm(UserCreationForm):
     """Create a user registration form with required fields."""
+    image = forms.ImageField(required=False)  # Add an image field to the form (make it optional)
+
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'image')
         widgets = {
             'first_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'First Name'}),
             'last_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Last Name'}),
@@ -30,6 +32,16 @@ class RegistrationForm(UserCreationForm):
         self.fields['password1'].help_text = '<ul class="form-text text-muted small"><li>Your password can\'t be too similar to your other personal information.</li><li>Your password must contain at least 8 characters.</li><li>Your password can\'t be a commonly used password.</li><li>Your password can\'t be entirely numeric.</li></ul>'
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        if commit:
+            user.save()
+            # Now we handle the image separately
+            profile = user.profile  # This assumes you have created the profile in the signal
+            profile.image = self.cleaned_data.get('image')
+            profile.save()
+        return user
 
 class EventForm(forms.ModelForm):
     """Create an event registration form. User has to be logged in."""

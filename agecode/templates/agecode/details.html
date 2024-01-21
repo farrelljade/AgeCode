@@ -19,5 +19,25 @@
         </div>
     </div></br>
     <h5>Attendees: {{ total_attendees }}</h5>
+    {% if attendees %}
+      <div class="container">
+        <div class="row">
+          {% for attendee in attendees %}
+            <div class="col-md-4">
+              <div class="card">
+                <div class="d-flex justify-content-center mt-3">
+                  <img src="{{ attendee.profile.image.url }}" class="img-fluid rounded-circle" style="width: 75px; height: 75px;" alt="{{ attendee.get_full_name|default:attendee.username }}">
+                </div>
+                <div class="card-body text-center">
+                  <h5 class="card-title">{{ attendee.get_full_name|default:attendee.username }}</h5>
+                  <p class="card-text">{{ attendee.role }}</p>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
   {% endif %}
 {% endblock content %}

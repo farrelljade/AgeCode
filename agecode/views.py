@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Count
 from .forms import RegistrationForm, EventForm
 from .models import Event, EventAttendance
+from django.contrib.auth.models import User
 
 
 def home(request):
@@ -47,7 +49,7 @@ def user_logout(request):
 def register_user(request):
     """User registration form."""
     if request.method == 'POST':
-        form = RegistrationForm(request.POST)
+        form = RegistrationForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
             # Authenticate/log user in.
@@ -117,11 +119,14 @@ def event_details(request, event_id):
         attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
         # Count the total number of attendees for the event
         total_attendees = EventAttendance.objects.filter(event=event).count()
+        # Get the name of the attendees
+        attendees = User.objects.filter(eventattendance__event=event)
 
         context = {
             'event': event,
             'attending_event_ids': attending_event_ids,
-            'total_attendees': total_attendees
+            'total_attendees': total_attendees,
+            'attendees': attendees,
         }
         return render(request, 'agecode/details.html', context)
     else:
@@ -208,10 +213,12 @@ def view_profile(request):
     if request.user.is_authenticated:
         # Show the amount of events the user is attending
         event_count = EventAttendance.objects.filter(user=request.user).count()
-        # Show the events user is attending
-        attending_events = EventAttendance.objects.filter(user=request.user).select_related('event')
-        # Show events created by user
-        created_events = Event.objects.filter(organizer=request.user)
+
+        # Show the events user is attending with the count of attendees for each event
+        attending_events = EventAttendance.objects.filter(user=request.user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
+
+        # Show events created by user with the count of attendees for each event
+        created_events = Event.objects.filter(organizer=request.user).annotate(total_attendees=Count('eventattendance'))
 
         context = {
             'attending_events': attending_events,
