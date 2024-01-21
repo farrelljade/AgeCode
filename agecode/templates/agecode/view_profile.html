@@ -1,42 +1,92 @@
 {% extends "agecode/base.html" %}
 
-
 {% block content %}
 
-  <h3>Manage Events:</h3>
-  {% if created_events %}
-    {% for event in created_events %}
-    <div class="card" style="width: 18rem;">
-      <!-- Event information like title, date, etc. -->
-      <div class="card-header">
-        <h5>{{ event.title }}</h5>
-      </div>
-      <div class="card-body">
-        <a href="{% url 'agecode:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
-        <!-- Other buttons like details or delete -->
-      </div>
-    </div>
-    {% endfor %}
-  {% else %}
-    <p>You haven't created any events yet.</p>
-  {% endif %}</br>
+<div class="container">
+  <div class="row">
 
-    <h3>You have {{ event_count }} upcoming events</h3>
-    {% if attending_events %}
-      {% for attendance in attending_events %}
-      <div class="card" style="width: 18rem;">
-        <div class="card-header">
-          <h5>{{ attendance.event.location }}</h5>
-        </div>
-        <ul class="list-group list-group-flush">
-          <li class="list-group-item">{{ attendance.event.date }}</li>
-        </ul>
+    <!-- Upcoming Events Column -->
+    <div class="col-md-6">
+      <h3>You have {{ event_count }} upcoming events</h3>
+      {% if attending_events %}
+        {% for attendance in attending_events %}
+        <div class="card" style="width: 75%;">
+          <div class="card-header">
+            <h5>{{ attendance.event.location }}</h5>
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">{{ attendance.event.date }}</li>
+          </ul>
           <div class="card-body">
             <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-danger">Cancel Event</a>
             <a href="{% url 'agecode:details' attendance.event.id %}" class="btn btn-primary">Details</a>
           </div>
-      </div></br>
-      {% endfor %}
-    {% endif %}
+        </div></br>
+        {% endfor %}
+      {% else %}
+        <p>Your RSVP events appear here.</p>
+      {% endif %}
+    </div>
+    
+    <!-- Manage Events Column -->
+    <div class="col-md-6">
+      <h3>Manage Events:</h3>
+      {% if created_events %}
+        {% for event in created_events %}
+        <div class="card" style="width: 75%;">
+          <div class="card-header">
+            <h5>{{ event.title }}</h5>
+          </div>
+          <div class="card-body">
+            <a href="{% url 'agecode:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-delete-url="{% url 'agecode:delete_event' event.id %}">
+              Delete Event
+            </button>            
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <p>You haven't created any events yet.</p>
+      {% endif %}
+    </div>
+
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this event?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <a href="#" id="deleteEventLink" class="btn btn-danger">Delete</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<script>
+  var deleteConfirmationModal = document.getElementById('deleteConfirmationModal')
+  deleteConfirmationModal.addEventListener('show.bs.modal', function (event) {
+    // Button that triggered the modal
+    var button = event.relatedTarget
+    // Extract the delete URL from the data-delete-url attribute
+    var deleteUrl = button.getAttribute('data-delete-url')
+
+    // Update the modal's delete link
+    var deleteEventLink = deleteConfirmationModal.querySelector('#deleteEventLink')
+    deleteEventLink.href = deleteUrl
+  })
+</script>
+
 
 {% endblock content %}

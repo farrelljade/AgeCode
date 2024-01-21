@@ -189,7 +189,15 @@ def edit_event(request, event_id):
 
 
 def delete_event(request, event_id):
-    pass
+    """User created events delete page."""
+    if request.user.is_authenticated:
+        user_event = get_object_or_404(Event, id=event_id, organizer=request.user)
+        user_event.delete()
+        messages.success(request, "Event deleted successfully...")
+        return redirect('agecode:view_profile')
+    else:
+        messages.error(request, "You must be logged in to delete an event...")
+        return redirect('agecode:login')
 
 
 def view_profile(request):
