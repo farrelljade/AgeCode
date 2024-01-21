@@ -115,10 +115,13 @@ def event_details(request, event_id):
 
         # Get IDs of events the user is attending
         attending_event_ids = set(EventAttendance.objects.filter(user=request.user).values_list('event_id', flat=True))
+        # Count the total number of attendees for the event
+        total_attendees = EventAttendance.objects.filter(event=event).count()
 
         context = {
             'event': event,
             'attending_event_ids': attending_event_ids,
+            'total_attendees': total_attendees
         }
         return render(request, 'agecode/details.html', context)
     else:
