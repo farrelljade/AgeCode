@@ -2,7 +2,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
-from .models import Event
+from .models import Event, Profile
 
 
 class RegistrationForm(UserCreationForm):
@@ -63,3 +63,10 @@ class EventForm(forms.ModelForm):
             'date': '',
             'location': '',
         }
+
+
+class ProfileForm(forms.ModelForm):
+    """User form to edit their profile."""
+    class Meta:
+        model = Profile
+        fields = ['image']

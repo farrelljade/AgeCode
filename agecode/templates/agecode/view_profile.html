@@ -3,6 +3,19 @@
 {% block content %}
 
 <div class="container">
+  <div class="col">
+    <div class="position-relative" style="width: 400px;">
+      <img src="{{ profile_user.profile.image.url }}" class="img-fluid rounded-circle" alt="Profile Picture of {{ profile_user.username }}">
+      <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, 300%); border-radius: 50%; width: 50%; text-align: center; background-color: rgba(0, 0, 0, 0.7); padding: 10px;">
+        {% if request.user == profile_user %}
+          <a href="{% url 'agecode:edit_profile' profile_user.profile.pk %}" class="text-white" style="text-decoration: none;">Update photo</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div></br>
+
+<div class="container">
   <div class="row">
 
     <!-- Upcoming Events Column -->

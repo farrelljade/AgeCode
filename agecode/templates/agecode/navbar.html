@@ -29,7 +29,7 @@
             <img src="{{ user.profile.image.url }}" class="rounded-circle" style="width: 40px; height: 40px;" alt="{{ user.username }}">
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            <li><a class="dropdown-item" href="{% url 'agecode:view_profile' %}">View profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'agecode:view_profile' request.user.id %}">View profile</a></li>
             <li><a class="dropdown-item" href="{% url 'agecode:add_event' %}">Create event</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'agecode:logout' %}">Log out</a></li>

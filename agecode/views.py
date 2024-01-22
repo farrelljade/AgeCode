@@ -3,8 +3,8 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Count
-from .forms import RegistrationForm, EventForm
-from .models import Event, EventAttendance
+from .forms import RegistrationForm, EventForm, ProfileForm
+from .models import Event, EventAttendance, Profile
 from django.contrib.auth.models import User
 
 
@@ -187,7 +187,7 @@ def edit_event(request, event_id):
         if form.is_valid():
             form.save()
             messages.success(request, "Your event has been updated...")
-            return redirect('agecode:view_profile')
+            return redirect('agecode:view_profile', user_id=request.user.id)
     else:
         # This else corresponds to if the request is not POST, meaning it is a GET request
         form = EventForm(instance=user_event)
@@ -196,36 +196,50 @@ def edit_event(request, event_id):
     return render(request, 'agecode/edit_event.html', {'form': form})
 
 
+@login_required
+def edit_profile(request, pk):
+    """User profile edit page."""
+    profile_user = get_object_or_404(Profile, pk=pk, user=request.user)
+
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, request.FILES, instance=profile_user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated successfully...")
+            return redirect('agecode:view_profile', user_id=request.user.id)
+    else:
+        form = ProfileForm(instance=profile_user)
+
+    return render(request, 'agecode/edit_profile.html', {'form': form})
+
+
+@login_required
 def delete_event(request, event_id):
     """User created events delete page."""
-    if request.user.is_authenticated:
-        user_event = get_object_or_404(Event, id=event_id, organizer=request.user)
-        user_event.delete()
-        messages.success(request, "Event deleted successfully...")
-        return redirect('agecode:view_profile')
-    else:
-        messages.error(request, "You must be logged in to delete an event...")
-        return redirect('agecode:login')
+    user_event = get_object_or_404(Event, id=event_id, organizer=request.user)
+    user_event.delete()
+    messages.success(request, "Event deleted successfully...")
+    return redirect('agecode:view_profile', user_id=request.user.id)
+ 
 
-
-def view_profile(request):
+@login_required
+def view_profile(request, user_id):
     """User profile page."""
-    if request.user.is_authenticated:
-        # Show the amount of events the user is attending
-        event_count = EventAttendance.objects.filter(user=request.user).count()
+    user = get_object_or_404(User, pk=user_id)
 
-        # Show the events user is attending with the count of attendees for each event
-        attending_events = EventAttendance.objects.filter(user=request.user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
+    # Show the amount of events the specified user is attending
+    event_count = EventAttendance.objects.filter(user=user).count()
 
-        # Show events created by user with the count of attendees for each event
-        created_events = Event.objects.filter(organizer=request.user).annotate(total_attendees=Count('eventattendance'))
+    # Show the events the specified user is attending with the count of attendees for each event
+    attending_events = EventAttendance.objects.filter(user=user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
 
-        context = {
-            'attending_events': attending_events,
-            'event_count': event_count,
-            'created_events': created_events,
-        }
-        return render(request, 'agecode/view_profile.html', context)
-    else:
-        messages.error(request, "You must be logged in to view this page!")
-        return redirect('agecode:home')
+    # Show events created by the specified user with the count of attendees for each event
+    created_events = Event.objects.filter(organizer=user).annotate(total_attendees=Count('eventattendance'))
+
+    context = {
+        'profile_user': user,  # Pass the user object to the template
+        'attending_events': attending_events,
+        'event_count': event_count,
+        'created_events': created_events,
+    }
+    return render(request, 'agecode/view_profile.html', context)
