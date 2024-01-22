@@ -223,21 +223,14 @@ def delete_event(request, event_id):
  
 
 @login_required
-def view_profile(request, user_id):
+def view_profile(request):
     """User profile page."""
-    user = get_object_or_404(User, pk=user_id)
-
-    # Show the amount of events the specified user is attending
-    event_count = EventAttendance.objects.filter(user=user).count()
-
-    # Show the events the specified user is attending with the count of attendees for each event
-    attending_events = EventAttendance.objects.filter(user=user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
-
-    # Show events created by the specified user with the count of attendees for each event
-    created_events = Event.objects.filter(organizer=user).annotate(total_attendees=Count('eventattendance'))
+    event_count = EventAttendance.objects.filter(user=request.user).count()
+    attending_events = EventAttendance.objects.filter(user=request.user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
+    created_events = Event.objects.filter(organizer=request.user).annotate(total_attendees=Count('eventattendance'))
 
     context = {
-        'profile_user': user,  # Pass the user object to the template
+        'profile_user': request.user,
         'attending_events': attending_events,
         'event_count': event_count,
         'created_events': created_events,
