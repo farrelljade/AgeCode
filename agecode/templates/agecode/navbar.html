@@ -80,4 +80,22 @@
       {% endif %}
     </div>
   </div>
+
+    <!-- Script to redirect user to login Modal if incorrect login details -->
+    {% if messages %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var showErrorModal = false;
+            {% for message in messages %}
+            if ("{{ message.tags }}" === "error") {
+                showErrorModal = true;
+            }
+            {% endfor %}
+            if (showErrorModal) {
+                $('#exampleModal').modal('show');  // Modal ID
+            }
+        });
+    </script>
+    {% endif %}
+
 </nav>
