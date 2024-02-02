@@ -24,7 +24,7 @@
         <div class="row">
           {% for attendee in attendees %}
             <div class="col-md-4">
-              <div class="card">
+              <div class="card no-border-card">
                 <div class="d-flex justify-content-center mt-3">
                   <img src="{{ attendee.profile.image.url }}" class="img-fluid rounded-circle" style="width: 75px; height: 75px;" alt="{{ attendee.get_full_name|default:attendee.username }}">
                 </div>

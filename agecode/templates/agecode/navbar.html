@@ -31,6 +31,7 @@
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="{% url 'agecode:view_profile' %}">View profile</a></li>
             <li><a class="dropdown-item" href="{% url 'agecode:add_event' %}">Create event</a></li>
+            <li><a class="dropdown-item" href="{% url 'agecode:profile_list' %}">User profiles</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="{% url 'agecode:logout' %}">Log out</a></li>
           </ul>
@@ -80,22 +81,5 @@
       {% endif %}
     </div>
   </div>
-
-    <!-- Script to redirect user to login Modal if incorrect login details -->
-    {% if messages %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            var showErrorModal = false;
-            {% for message in messages %}
-            if ("{{ message.tags }}" === "error") {
-                showErrorModal = true;
-            }
-            {% endfor %}
-            if (showErrorModal) {
-                $('#exampleModal').modal('show');  // Modal ID
-            }
-        });
-    </script>
-    {% endif %}
 
 </nav>

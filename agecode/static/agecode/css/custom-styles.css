@@ -1,0 +1,10 @@
+/* custom-styles.css */
+.no-border-card {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+  }
+  
+.equal-height-card {
+    height: 250px; /* Set a fixed height or use min-height for a minimum height */
+  }

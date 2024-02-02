@@ -8,6 +8,16 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='profile_images/', default='default.jpg')
 
+    # Set up a many-to-many relationship to the same model ('self') for followers.
+    # 'symmetrical=False' means if A follows B, B doesn't necessarily follow A.
+    # 'related_name' allows querying who follows a user.
+    # 'blank=True' allows a profile to follow no other profiles.
+    follows = models.ManyToManyField("self",
+        related_name="followed_by",
+        symmetrical=False,
+        blank=True,
+    )
+
     def __str__(self):
         return f'{self.user.username} Profile'
 

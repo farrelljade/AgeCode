@@ -234,3 +234,16 @@ def view_profile(request):
         'created_events': created_events,
     }
     return render(request, 'agecode/view_profile.html', context)
+
+
+@login_required
+def profile_list(request):
+    """List of users page."""
+    # Retrieve a list of profiles excluding the logged in user.
+    profiles = Profile.objects.exclude(user=request.user)
+
+    context = {
+        'profiles': profiles,
+        'profile_user': request.user,
+    }
+    return render(request, 'agecode/profile_list.html', context)
