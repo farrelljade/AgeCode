@@ -227,23 +227,58 @@ def view_profile(request):
     attending_events = EventAttendance.objects.filter(user=request.user).select_related('event').annotate(total_attendees=Count('event__eventattendance'))
     created_events = Event.objects.filter(organizer=request.user).annotate(total_attendees=Count('eventattendance'))
 
+    # Get the current user's profile
+    current_user_profile = request.user.profile
+
+    # Calculate followers and following counts
+    followers_count = current_user_profile.followed_by.count()
+    following_count = current_user_profile.follows.count()
+
+    # Update the context with the new counts
     context = {
         'profile_user': request.user,
         'attending_events': attending_events,
         'event_count': event_count,
         'created_events': created_events,
+        'followers_count': followers_count,
+        'following_count': following_count,
     }
+    
     return render(request, 'agecode/view_profile.html', context)
 
 
 @login_required
 def profile_list(request):
-    """List of users page."""
+    """List of users page. Ability to follow/unfollow users."""
+    if request.method == 'POST':
+        # Get the profile id from the form submission.
+        profile_id = request.POST.get('profile_id')
+        action = request.POST.get('action')
+
+        try:
+            # Get the profile to follow/unfollow.
+            target_profile = Profile.objects.get(id=profile_id)
+
+            # Follow or unfollow based on the action submitted.
+            if action == 'follow':
+                request.user.profile.follows.add(target_profile)
+                messages.success(request, f"You are now following {target_profile.user.username}.")
+            elif action == 'unfollow':
+                request.user.profile.follows.remove(target_profile)
+                messages.success(request, f"You have unfollowed {target_profile.user.username}.")
+        
+        except Profile.DoesNotExist:
+            messages.error(request, "That profile does not exist.")
+        return redirect('agecode:profile_list')
+
     # Retrieve a list of profiles excluding the logged in user.
-    profiles = Profile.objects.exclude(user=request.user)
+    list_profiles = Profile.objects.exclude(user=request.user)
+    
+    # Additionally, pass information about who the user is following.
+    following_ids = request.user.profile.follows.values_list('id', flat=True)
 
     context = {
-        'profiles': profiles,
-        'profile_user': request.user,
+        'list_profiles': list_profiles,
+        'following_ids': following_ids,
     }
     return render(request, 'agecode/profile_list.html', context)
