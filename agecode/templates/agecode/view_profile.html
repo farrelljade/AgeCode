@@ -1,14 +1,14 @@
 {% extends "agecode/base.html" %}
+{% load static %}
 
 {% block content %}
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
-
-    <div class="col-sm-5">
-      <div class="position-relative" style="width: 400px;">
+    <div class="col-sm-6">
+      <div class="position-relative" style="width: 300px;">
         <img src="{{ profile_user.profile.image.url }}" class="img-fluid rounded-circle" alt="Profile Picture of {{ profile_user.username }}">
-        <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, 300%); border-radius: 50%; width: 50%; text-align: center; background-color: rgba(0, 0, 0, 0.7); padding: 10px;">
+        <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -300%); border-radius: 50%; width: 50%; text-align: center; background-color: rgba(0, 0, 0, 0.7); padding: 10px;">
           {% if request.user == profile_user %}
             <a href="{% url 'agecode:edit_profile' profile_user.profile.pk %}" class="text-white" style="text-decoration: none;">Change photo</a>
           {% endif %}
@@ -16,79 +16,81 @@
       </div>
     </div>
 
-      <!-- First Card Column -->
-      <div class="col-sm-2">
-        <div class="card text-center no-border-card" style="width: auto;"> <!-- Adjusted for automatic width within the column -->
-          <div class="card-body">
-            <h5 class="card-title">Followers</h5>
-            <h5 class="card-text">{{ followers_count }}</h5>
-          </div>
+    <div class="col-sm-6">
+      <div class="card no-border-card">
+        <div class="card-body">
+          <h5 class="card-title">About Me</h5>
+          <p class="card-text">This is a brief paragraph about yourself. You can include your interests, what you do, or any other information you'd like to share.</p>
+          <h6 class="card-subtitle mb-2 text-muted">{{ followers_count }} Followers
+            &nbsp;&nbsp;&nbsp;{{ following_count }} Following</h6>
         </div>
       </div>
-      <!-- Second Card Column -->
-      <div class="col-sm-2">
-        <div class="card text-center no-border-card" style="width: auto;"> <!-- Adjusted for automatic width within the column -->
-          <div class="card-body">
-            <h5 class="card-title">Following</h5>
-            <h5 class="card-text">{{ following_count }}</h5>
-          </div>
-        </div>
-      </div>
-
+    </div>
   </div>
 </div></br>
 
 
-<div class="container">
+<div class="container-fluid">
   <div class="row">
 
     <!-- Upcoming Events Column -->
     <div class="col-md-6">
-      <h3>You have {{ event_count }} upcoming events</h3>
-      {% if attending_events %}
+      <div class="card text-center" style="width: 100%;">
+        <div class="card-header">
+          <h5>Upcoming events: {{ event_count }}</h5>
+        </div>
+        {% if attending_events %}
         {% for attendance in attending_events %}
-        <div class="card" style="width: 75%;">
-          <div class="card-header">
-            <h5>{{ attendance.event.location }}</h5>
-          </div>
-          <ul class="list-group list-group-flush">
-            <li class="list-group-item">{{ attendance.event.date }}</li>
-          </ul>
-          <div class="card-body">
-            <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="btn btn-danger">Cancel Event</a>
-            <a href="{% url 'agecode:details' attendance.event.id %}" class="btn btn-primary">Details</a>
-          </div>
-        </div></br>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="event-info">
+              {{ attendance.event.title }} - {{ attendance.event.location }} - {{ attendance.event.date }}
+            </div>
+              <div class="event-actions">
+                <a href="{% url 'agecode:cancel_event' attendance.event.id %}" class="no-underline red-text"><strong>Cancel Event</strong></a>
+                <a href="{% url 'agecode:details' attendance.event.id %}" class="no-underline blue-text"><strong>Details</strong></a>
+              </div>
+          </li>
+        </ul>              
         {% endfor %}
-      {% else %}
-        <p>Your RSVP events appear here.</p>
-      {% endif %}
+        {% else %}
+          <p>Your RSVP events appear here.</p>
+        {% endif %}
+      </div></br>
     </div>
     
     <!-- Manage Events Column -->
     <div class="col-md-6">
-      <h3>Manage events:</h3>
-      {% if created_events %}
+      <div class="card text-center" style="width: 100%;">
+        <div class="card-header">
+          <h5>Manage created events</h5>
+        </div>
+
+        {% if created_events %}
         {% for event in created_events %}
-        <div class="card" style="width: 75%;">
-          <div class="card-header">
-            <h5>{{ event.title }}</h5>
-          </div>
-          <div class="card-body">
-            <h5>Total attendees: {{ event.total_attendees }}</h5>
-          </div>
-          <div class="card-body">
-            <a href="{% url 'agecode:edit_event' event.id %}" class="btn btn-warning">Edit Event</a>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal" data-delete-url="{% url 'agecode:delete_event' event.id %}">
-              Delete Event
-            </button>            
+        
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            <div class="event-info">
+              {{ event.title }} - Going: <strong>{{ event.total_attendees }}</strong>
+            </div>
+            <div class="event-actions">
+              <a href="{% url 'agecode:edit_event' event.id %}" class="no-underline yellow-text"><strong>Edit Event</strong></a>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal"
+              data-delete-url="{% url 'agecode:delete_event' event.id %}" class="no-underline red-text">
+              <strong>Delete Event</strong>
+              </button>
+            </div>
+          </li>
+        </ul>
+
+        {% endfor %}
+        {% else %}
+          <p>You haven't created any events yet.</p>
+        {% endif %}            
           </div>
         </div></br>
-        {% endfor %}
-      {% else %}
-        <p>You haven't created any events yet.</p>
-      {% endif %}
-    </div>
+       
 
   </div>
 

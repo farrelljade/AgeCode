@@ -8,3 +8,42 @@
 .equal-height-card {
     height: 250px; /* Set a fixed height or use min-height for a minimum height */
   }
+
+.list-links a {
+    display: block;
+    margin-bottom: 5px; /* Optional: adds a little space between the links */
+}
+
+.event-info {
+  margin-bottom: 10px; /* Adjusts space between the event info and the buttons */
+}
+
+.event-actions a {
+  display: inline-block; /* Ensures links/buttons are displayed on the same line */
+  margin-right: 5px; /* Optional: adds space between the buttons */
+  text-decoration: none;
+}
+
+.no-underline, .no-underline:hover, .no-underline:focus, .no-underline:active {
+  text-decoration: none;
+  outline: none;
+  box-shadow: none;
+  border: none;
+  background: none;
+}
+
+.blue-text {
+  color: #0c7aeede; /* Blue */
+}
+
+.green-text {
+  color: #1fcd47; /* Green */
+}
+
+.red-text {
+  color: #dd1d30; /* Red */
+}
+
+.yellow-text {
+  color: #eaea10; /* Using hexadecimal value */
+}
