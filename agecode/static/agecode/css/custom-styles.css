@@ -47,3 +47,8 @@
 .yellow-text {
   color: #eaea10; /* Using hexadecimal value */
 }
+
+h1, h2, h3, p {
+  font-family: 'Roboto', sans-serif;
+  color: hsl(0, 0%, 0%);
+}
